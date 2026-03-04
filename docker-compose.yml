@@ -31,7 +31,18 @@ services:
       - financeiro-network
     restart: unless-stopped
 
-volumes:
+  app:
+    build: .
+    container_name: tcc-backend-app
+    environment:
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+    networks:
+      - financeiro-network
+    restart: unless-stopped
   postgres_data:
 
 networks:
