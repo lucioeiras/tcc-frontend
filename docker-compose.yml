@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine  # versão leve e estável
+    container_name: financeiro-postgres
+    environment:
+      POSTGRES_USER: ${DB_USER}          # definido no .env
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5432:5432"                       # expõe a porta padrão
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  # volume persistente
+    networks:
+      - financeiro-network
+    restart: unless-stopped
+
+  # Opcional: pgAdmin para gerenciar o banco via interface web
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: financeiro-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@admin.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - financeiro-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  financeiro-network:
+    driver: bridge
