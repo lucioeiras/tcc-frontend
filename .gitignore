@@ -17,6 +17,9 @@ pnpm-debug.log*
 dist/
 build/
 
+# Cobertura de testes
+coverage/
+
 # Cache
 .cache/
 .tmp/
