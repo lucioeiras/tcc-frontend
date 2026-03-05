@@ -1,20 +1,28 @@
 # tcc-backend
 
-## Instalar dependências básicas
-```bash
-npm install express dotenv cors helmet morgan compression
+## Subir Containers
 
-npm install -D nodemon typescript @types/node @types/express ts-node
+```bash
+docker-compose up -d
 ```
 
-## Instalar Prisma
+## Instalar dependências
 ```bash
-npm install @prisma/client
-npm install -D prisma
-npx prisma init
+npm ci
 ```
 
-## Configure o arquivo .env
+## Gerar Prisma client
+```bash
+npx prisma generate
+```
+
+## Rodar database migrations
+```bash
+npx prisma migrate deploy
+```
+
+
+## Configure o arquivo .env local
 Ex:
 ```bash
 # Banco de Dados
@@ -28,16 +36,4 @@ PGADMIN_PASSWORD=admin123
 
 # URL de conexão para o Prisma (será usada no schema)
 DATABASE_URL="postgresql://${DB_USER}:${DB_PASSWORD}@localhost:5432/${DB_NAME}?schema=public"
-```
-
-## Subir o banco de dados
-
-```bash
-docker-compose up -d
-```
-
-## Configurar prisma
-```bash
-npx prisma init
-npx prisma migrate dev --name init
 ```
