@@ -6,23 +6,24 @@
 docker-compose up -d
 ```
 
-## Instalar dependências
+## Ambiente Local
+### Instalar dependências
 ```bash
 npm ci
 ```
 
-## Gerar Prisma client
+### Gerar Prisma client
 ```bash
 npx prisma generate
 ```
 
-## Rodar database migrations
+### Rodar database migrations
 ```bash
 npx prisma migrate deploy
 ```
 
 
-## Configure o arquivo .env local
+### Configure o arquivo .env local
 Ex:
 ```bash
 # Banco de Dados
@@ -30,10 +31,9 @@ DB_USER=financeiro_user
 DB_PASSWORD=senha_segura
 DB_NAME=financeiro_db
 
-# Opcional para pgAdmin
-PGADMIN_EMAIL=seu_email@exemplo.com
-PGADMIN_PASSWORD=admin123
+DATABASE_URL="postgresql://financeiro_user:senha_segura@localhost:5432/financeiro_db"
 
-# URL de conexão para o Prisma (será usada no schema)
-DATABASE_URL="postgresql://${DB_USER}:${DB_PASSWORD}@localhost:5432/${DB_NAME}?schema=public"
+JWT_SECRET="MinhaChaveSecretaSuperSegura"
+JWT_EXPIRES_IN="7d"
+PORT=3000
 ```
