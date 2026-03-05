@@ -29,8 +29,8 @@ jobs:
         run: |
           docker compose up -d
         env:
-          DB_USER:     postgres
-          DB_PASSWORD: postgres
+          DB_USER:     financeiro_user
+          DB_PASSWORD: senha_segura
           DB_NAME:     financeiro_db
 
       # Aguarda o banco estar pronto (pg_isready)
@@ -48,7 +48,7 @@ jobs:
         run: docker compose exec -T app npx prisma generate
 
       # Roda os testes de /src/tests/
-      - name: Run old test script (opcional)
+      - name: Run tests
         run: docker compose exec -T app npm test
 
       # Sempre para os containers no final
