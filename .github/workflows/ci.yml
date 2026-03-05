@@ -49,11 +49,11 @@ jobs:
 
       # Roda os testes de /src/tests/
       - name: Run tests
-        run: docker compose exec -T app npm test
         env:
-          JWT_SECRET: "MinhaChaveSecretaSuperSegura"
-          JWT_EXPIRES_IN: "7d"
-
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          JWT_EXPIRES_IN: ${{ secrets.JWT_EXPIRES_IN }}
+        run: docker compose exec -T app npm test
+        
       # Sempre para os containers no final
       - name: Stop and remove containers
         if: always()
