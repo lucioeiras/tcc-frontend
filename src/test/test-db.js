@@ -1,4 +1,7 @@
+// src/test/test-db.js
+require('dotenv').config();
 const { PrismaClient } = require('@prisma/client');
+
 const prisma = new PrismaClient();
 
 async function main() {
@@ -18,7 +21,7 @@ async function main() {
 }
 
 main()
-  .catch(e => console.error(e))
+  .catch(e => console.error('Erro:', e))
   .finally(async () => {
     await prisma.$disconnect();
   });
