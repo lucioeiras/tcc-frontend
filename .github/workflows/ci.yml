@@ -32,7 +32,8 @@ jobs:
           DB_USER:     financeiro_user
           DB_PASSWORD: senha_segura
           DB_NAME:     financeiro_db
-
+          JWT_SECRET:  "MinhaChaveSecretaSuperSegura"
+          JWT_EXPIRES_IN: "7d"
       # Aguarda o banco estar pronto (pg_isready)
       - name: Wait for PostgreSQL to be ready
         run: |
@@ -50,8 +51,8 @@ jobs:
       # Roda os testes de /src/tests/
       - name: Run tests
         env:
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          JWT_EXPIRES_IN: ${{ secrets.JWT_EXPIRES_IN }}
+          JWT_SECRET: "MinhaChaveSecretaSuperSegura"
+          JWT_EXPIRES_IN: "7d"
         run: docker compose exec -T app npm test
         
       # Sempre para os containers no final
