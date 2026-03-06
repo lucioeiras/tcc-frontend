@@ -6,6 +6,12 @@
 docker-compose up -d
 ```
 
+## Caso docker-entrypoint.sh não for reconhecido
+
+```bash
+dos2unix docker-entrypoint.sh
+```
+
 ## Ambiente Local
 ### Instalar dependências
 ```bash
