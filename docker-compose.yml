@@ -32,7 +32,7 @@ services:
     restart: unless-stopped
 
   jenkins:
-      image: jenkins/jenkins:lts
+      build: ./jenkins
       container_name: jenkins
       user: root
       ports:
