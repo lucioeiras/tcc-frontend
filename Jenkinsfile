@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        COMPOSE_PROJECT_NAME = "tcc-ci"
-    }
-
     stages {
 
         stage('Checkout') {
@@ -15,8 +11,10 @@ pipeline {
 
         stage('Build Containers') {
             steps {
-                sh 'docker compose down || true'
-                sh 'docker compose up -d --build'
+                sh '''
+                docker compose -p build_${BUILD_ID} down -v || true
+                docker compose -p build_${BUILD_ID} --env-file .env up -d --build
+                '''
             }
         }
 
@@ -32,7 +30,7 @@ pipeline {
         stage('Health Check API') {
             steps {
                 sh '''
-                curl -f http://localhost:3000 || exit 1
+                docker compose -p build_${BUILD_ID} exec -T app curl -f http://localhost:3000 || exit 1
                 '''
             }
         }
@@ -40,7 +38,7 @@ pipeline {
         stage('Run Tests (opcional)') {
             steps {
                 sh '''
-                docker exec tcc-backend-app npm test || echo "Sem testes ainda"
+                docker compose -p build_${BUILD_ID} exec -T app npm test || echo "Sem testes ainda"
                 '''
             }
         }
@@ -48,7 +46,7 @@ pipeline {
 
     post {
         always {
-            sh 'docker compose down'
+            sh 'docker compose -p build_${BUILD_ID} down -v'
         }
 
         success {

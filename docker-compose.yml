@@ -1,9 +1,7 @@
-version: '3.8'
-
 services:
   postgres:
     image: postgres:15-alpine
-    container_name: financeiro-postgres
+    #container_name: financeiro-postgres
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
@@ -18,13 +16,13 @@ services:
     
   app:
     build: .
-    container_name: tcc-backend-app
+    #container_name: tcc-backend-app
     environment:
       DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
     ports:
-      - "3000:3000"
+      - "3000"
     depends_on:
       - postgres
     networks:
@@ -37,4 +35,3 @@ networks:
 
 volumes:
   postgres_data:
-  jenkins_home:
