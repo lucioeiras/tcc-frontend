@@ -15,8 +15,8 @@ pipeline {
 
         stage('Build Containers') {
             steps {
-                sh 'docker-compose down || true'
-                sh 'docker-compose up -d --build'
+                sh 'docker compose down || true'
+                sh 'docker compose up -d --build'
             }
         }
 
@@ -48,7 +48,7 @@ pipeline {
 
     post {
         always {
-            sh 'docker-compose down'
+            sh 'docker compose down'
         }
 
         success {
