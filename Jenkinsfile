@@ -38,7 +38,7 @@ pipeline {
         stage('Health Check API') {
             steps {
                 sh '''
-                docker compose -p build_${BUILD_ID} exec -T app curl -f http://localhost:3000 || exit 1
+                docker compose -p build_${BUILD_ID} exec -T app wget -qO- http://localhost:3000 || exit 1
                 '''
             }
         }
