@@ -13,7 +13,7 @@ COPY . .
 # Gera o Prisma Client (obrigatório no build)
 RUN npx prisma generate
 
-# Etapa final (imagem leve)
+# Etapa final
 FROM node:20-alpine
 
 WORKDIR /app
