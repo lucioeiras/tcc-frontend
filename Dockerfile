@@ -13,8 +13,6 @@ COPY . .
 # Gera o Prisma Client (obrigatório no build)
 RUN npx prisma generate
 
-# NÃO rode migrate aqui! Isso deve ficar no entrypoint
-
 # Etapa final (imagem leve)
 FROM node:20-alpine
 
