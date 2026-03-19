@@ -9,8 +9,7 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                git credentialsId: 'github-creds',
-                    url: 'https://github.com/acJoaog/tcc-backend.git'
+                checkout scm
             }
         }
 
