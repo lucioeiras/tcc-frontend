@@ -19,10 +19,18 @@ pipeline {
 
         stage('Build Containers') {
             steps {
-                sh '''
-                docker compose -p build_${BUILD_ID} down -v || true
-                docker compose -p build_${BUILD_ID} up -d --build
-                '''
+                withCredentials([
+                    string(credentialsId: 'DB_USER', variable: 'DB_USER'),
+                    string(credentialsId: 'DB_PASSWORD', variable: 'DB_PASSWORD'),
+                    string(credentialsId: 'DB_NAME', variable: 'DB_NAME'),
+                    string(credentialsId: 'JWT_SECRET', variable: 'JWT_SECRET'),
+                    string(credentialsId: 'JWT_EXPIRES_IN', variable: 'JWT_EXPIRES_IN')
+                ]) {
+                    sh '''
+                    docker compose -p build_${BUILD_ID} down -v || true
+                    docker compose -p build_${BUILD_ID} up -d --build
+                    '''
+                }
             }
         }
 
