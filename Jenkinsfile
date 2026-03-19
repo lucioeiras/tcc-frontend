@@ -1,3 +1,11 @@
+environment {
+    DB_USER = credentials('DB_USER')
+    DB_PASSWORD = credentials('DB_PASSWORD')
+    DB_NAME = credentials('DB_NAME')
+    JWT_SECRET = credentials('JWT_SECRET')
+    JWT_EXPIRES_IN = credentials('JWT_EXPIRES_IN')
+}
+
 pipeline {
     agent any
 
@@ -13,7 +21,7 @@ pipeline {
             steps {
                 sh '''
                 docker compose -p build_${BUILD_ID} down -v || true
-                docker compose -p build_${BUILD_ID} --env-file .env up -d --build
+                docker compose -p build_${BUILD_ID} up -d --build
                 '''
             }
         }
