@@ -1,23 +1,19 @@
-environment {
-    DB_USER = credentials('DB_USER')
-    DB_PASSWORD = credentials('DB_PASSWORD')
-    DB_NAME = credentials('DB_NAME')
-    JWT_SECRET = credentials('JWT_SECRET')
-    JWT_EXPIRES_IN = credentials('JWT_EXPIRES_IN')
-}
-
 pipeline {
     agent any
 
-    stages {
+    environment {
+        BUILD_PROJECT = "build_${BUILD_ID}"
+        TEST_PROJECT  = "test_${BUILD_ID}"
+    }
 
+    stages {
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
 
-        stage('Build Containers') {
+        stage('Build') {
             steps {
                 withCredentials([
                     string(credentialsId: 'DB_USER', variable: 'DB_USER'),
@@ -27,48 +23,54 @@ pipeline {
                     string(credentialsId: 'JWT_EXPIRES_IN', variable: 'JWT_EXPIRES_IN')
                 ]) {
                     sh '''
-                    docker compose -p build_${BUILD_ID} down -v || true
-                    docker compose -p build_${BUILD_ID} up -d --build
+                        docker compose -p ${BUILD_PROJECT} down -v || true
+                        docker compose -p ${BUILD_PROJECT} build --no-cache
                     '''
+                }
+            }
+            post {
+                always {
+                    sh 'docker compose -p ${BUILD_PROJECT} down -v || true'
                 }
             }
         }
 
-        stage('Wait for Services') {
+        stage('Test') {
             steps {
-                sh '''
-                echo "Aguardando serviços subirem..."
-                sleep 15
-                '''
-            }
-        }
+                withCredentials([
+                    string(credentialsId: 'DB_USER', variable: 'DB_USER'),
+                    string(credentialsId: 'DB_PASSWORD', variable: 'DB_PASSWORD'),
+                    string(credentialsId: 'DB_NAME', variable: 'DB_NAME'),
+                    string(credentialsId: 'JWT_SECRET', variable: 'JWT_SECRET'),
+                    string(credentialsId: 'JWT_EXPIRES_IN', variable: 'JWT_EXPIRES_IN')
+                ]) {
+                    sh '''
+                        docker compose -p ${TEST_PROJECT} down -v || true
+                        docker compose -p ${TEST_PROJECT} build --no-cache
+                        docker compose -p ${TEST_PROJECT} up -d
 
-        stage('Health Check API') {
-            steps {
-                sh '''
-                docker compose -p build_${BUILD_ID} exec -T app wget -qO- http://localhost:3000 || exit 1
-                '''
-            }
-        }
+                        timeout 60s bash -c 'until docker compose -p ${TEST_PROJECT} exec -T postgres pg_isready -U '"$DB_USER"'; do sleep 2; done'
 
-        stage('Run Tests (opcional)') {
-            steps {
-                sh '''
-                docker compose -p build_${BUILD_ID} exec -T app npm test || echo "Sem testes ainda"
-                '''
+                        docker compose -p ${TEST_PROJECT} exec -T app npx prisma generate
+                        docker compose -p ${TEST_PROJECT} exec -T app npm test
+                    '''
+                }
+            }
+            post {
+                always {
+                    sh '''
+                        docker compose -p ${TEST_PROJECT} logs --tail 100 || true
+                        docker compose -p ${TEST_PROJECT} down -v || true
+                    '''
+                }
             }
         }
     }
 
     post {
-        always {
-            sh 'docker compose -p build_${BUILD_ID} down -v'
-        }
-
         success {
-            echo 'CI/CD funcionando 🚀'
+            echo 'Build e testes funcionais 🚀'
         }
-
         failure {
             echo 'Pipeline falhou ❌'
         }
