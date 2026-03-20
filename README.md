@@ -3,8 +3,8 @@
 ## Rodar Jenkins local
 
 ```bash
-docker build -t jenkins ./jenkins
-docker run -d -p 8080:8080 -p 50000:50000 -u root -v jenkins_home:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock --name jenkins jenkins
+docker compose -f docker-compose.jenkins.yml up -d --build
+
 ```
 
 ## Subir Containers
