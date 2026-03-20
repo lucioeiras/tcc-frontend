@@ -10,11 +10,17 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    env:
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_NAME: ${{ secrets.DB_NAME }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      JWT_EXPIRES_IN: ${{ secrets.JWT_EXPIRES_IN }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Docker Compose v2
       - name: Setup Docker Compose
         run: |
           sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
@@ -24,38 +30,23 @@ jobs:
       - name: Build services
         run: docker compose build --no-cache
 
-      # Variáveis de ambiente para o banco (use valores fixos ou secrets)
       - name: Start services in background
-        run: |
-          docker compose up -d
-        env:
-          DB_USER:     financeiro_user
-          DB_PASSWORD: senha_segura
-          DB_NAME:     financeiro_db
-          JWT_SECRET:  "MinhaChaveSecretaSuperSegura"
-          JWT_EXPIRES_IN: "7d"
-      # Aguarda o banco estar pronto (pg_isready)
+        run: docker compose up -d
+
       - name: Wait for PostgreSQL to be ready
         run: |
-          timeout 60s bash -c "until docker compose exec -T postgres pg_isready -U postgres; do sleep 2; done"
+          timeout 60s bash -c "until docker compose exec -T postgres pg_isready -U $DB_USER; do sleep 2; done"
 
-      # Opcional: mostra logs do postgres para debug
       - name: Show Postgres logs (debug)
         if: always()
         run: docker compose logs postgres --tail 100 || true
 
-      # Gera o Prisma Client (se não estiver no build)
       - name: Generate Prisma Client inside app
         run: docker compose exec -T app npx prisma generate
 
-      # Roda os testes de /src/tests/
       - name: Run tests
-        env:
-          JWT_SECRET: "MinhaChaveSecretaSuperSegura"
-          JWT_EXPIRES_IN: "7d"
         run: docker compose exec -T app npm test
-        
-      # Sempre para os containers no final
+
       - name: Stop and remove containers
         if: always()
-        run: docker compose down -v  # -v remove volumes (limpa o banco)
+        run: docker compose down -v
