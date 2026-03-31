@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "node src/tests/test-db.js && npx jest",
+    "test": "npx jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:related": "jest --watch --onlyChanged",
