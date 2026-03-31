@@ -14,37 +14,46 @@ describe('Auth Routes', () => {
         .send({
           email: 'teste.novo.123@example.com',
           password: 'senha123456',
-          name: 'João Testador',
-          company: 'Empresa XYZ'
+          name: 'João Testador'
         })
         .expect(201);
 
       expect(response.body.message).toBe('Usuário criado com sucesso');
       expect(response.body.token).toBeTruthy();
+
       expect(response.body.user).toMatchObject({
         email: 'teste.novo.123@example.com',
-        name: 'João Testador',
-        company: 'Empresa XYZ'
+        name: 'João Testador'
       });
+
       expect(response.body.user.password).toBeUndefined();
 
       // Verifica no banco
       const user = await prisma.user.findUnique({
-        where: { email: 'teste.novo.123@example.com' }
+        where: { email: 'teste.novo.123@example.com' },
+        include: { preferences: true }
       });
 
       expect(user).not.toBeNull();
-      const passwordValid = await bcrypt.compare('senha123456', user.password);
+
+      // senha correta
+      const passwordValid = await bcrypt.compare(
+        'senha123456',
+        user.passwordHash
+      );
       expect(passwordValid).toBe(true);
+
+      // preferences criadas automaticamente
+      expect(user.preferences).not.toBeNull();
     });
 
     it('deve rejeitar email duplicado', async () => {
-      // Cria usuário previamente
       await prisma.user.create({
         data: {
           email: 'duplicado@example.com',
-          password: await bcrypt.hash('123456', 10),
-          name: 'Existente'
+          passwordHash: await bcrypt.hash('123456', 10),
+          name: 'Existente',
+          preferences: { create: {} }
         }
       });
 
@@ -74,15 +83,15 @@ describe('Auth Routes', () => {
   });
 
   describe('POST /login', () => {
-    let user;
-
     beforeEach(async () => {
       const hashed = await bcrypt.hash('senhaCorreta2025', 10);
-      user = await prisma.user.create({
+
+      await prisma.user.create({
         data: {
           email: 'login.teste@example.com',
-          password: hashed,
-          name: 'Usuário de Teste'
+          passwordHash: hashed,
+          name: 'Usuário de Teste',
+          preferences: { create: {} }
         }
       });
     });
@@ -107,6 +116,18 @@ describe('Auth Routes', () => {
         .send({
           email: 'login.teste@example.com',
           password: 'errado'
+        })
+        .expect(401);
+
+      expect(res.body.error).toBe('Credenciais inválidas');
+    });
+
+    it('deve rejeitar usuário inexistente', async () => {
+      const res = await request(app)
+        .post(`${baseUrl}/login`)
+        .send({
+          email: 'naoexiste@example.com',
+          password: '123456'
         })
         .expect(401);
 

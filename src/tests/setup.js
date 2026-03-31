@@ -3,10 +3,17 @@ const { prisma } = require('../config/prisma');
 
 beforeEach(async () => {
   try {
-    // Limpa apenas a tabela de usuários (ou outras tabelas que você use nos testes)
-    await prisma.user.deleteMany({});
+    await prisma.message.deleteMany();
+    await prisma.conversation.deleteMany();
+    await prisma.alert.deleteMany();
+    await prisma.budget.deleteMany();
+    await prisma.transaction.deleteMany();
+    await prisma.account.deleteMany();
+    await prisma.category.deleteMany();
+    await prisma.userPreference.deleteMany();
+    await prisma.user.deleteMany();
   } catch (err) {
-    console.warn('Aviso: não foi possível limpar tabela de usuários antes do teste', err);
+    console.warn('Erro ao limpar banco de testes:', err);
   }
 });
 
