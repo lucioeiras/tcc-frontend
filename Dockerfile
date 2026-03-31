@@ -34,3 +34,4 @@ EXPOSE 3000
 
 # Usa o entrypoint personalizado
 ENTRYPOINT ["/app/docker-entrypoint.sh"]
+CMD ["node", "server.js"]
