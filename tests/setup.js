@@ -1,5 +1,5 @@
-// src/tests/setup.js
-const { prisma } = require('../config/prisma');
+// tests/setup.js
+const { prisma } = require('../src/config/prisma');
 
 beforeEach(async () => {
   try {

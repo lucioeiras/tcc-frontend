@@ -1,7 +1,7 @@
-// src/tests/auth.test.js
+// tests/auth.test.js
 const request = require('supertest');
-const app = require('../app');
-const { prisma } = require('../config/prisma');
+const app = require('../src/app');
+const { prisma } = require('../src/config/prisma');
 const bcrypt = require('bcrypt');
 
 describe('Auth Routes', () => {

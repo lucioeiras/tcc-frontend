@@ -13,7 +13,7 @@
     "dev": "nodemon server.js"
   },
   "jest": {
-    "setupFilesAfterEnv": ["./src/tests/setup.js"],
+    "setupFilesAfterEnv": ["./tests/setup.js"],
     "maxWorkers": 1
   },
   "keywords": [],

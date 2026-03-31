@@ -1,6 +1,6 @@
 const request = require('supertest');
-const app = require('../app');
-const { prisma } = require('../config/prisma');
+const app = require('../src/app');
+const { prisma } = require('../src/config/prisma');
 
 const randomEmail = () => `teste.${Date.now()}@example.com`;
 
