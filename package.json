@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "npx jest",
+    "test": "npx jest --runInBand",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:related": "jest --watch --onlyChanged",
@@ -13,7 +13,8 @@
     "dev": "nodemon server.js"
   },
   "jest": {
-  "setupFilesAfterEnv": ["./src/tests/setup.js"]
+    "setupFilesAfterEnv": ["./src/tests/setup.js"],
+    "maxWorkers": 1
   },
   "keywords": [],
   "author": "",
