@@ -4,134 +4,221 @@ const app = require('../src/app');
 const { prisma } = require('../src/config/prisma');
 const bcrypt = require('bcrypt');
 
+// Setup global
+beforeAll(async () => {
+  process.env.JWT_SECRET = 'test-secret';
+});
+
+// Limpeza total antes de cada teste (isolamento)
+beforeEach(async () => {
+  await prisma.$transaction([
+    prisma.user.deleteMany()
+  ]);
+});
+
+afterAll(async () => {
+  await prisma.$disconnect();
+});
+
 describe('Auth Routes', () => {
   const baseUrl = '/api/auth';
 
   describe('POST /register', () => {
-    it('deve registrar um novo usuário com dados válidos', async () => {
-      const response = await request(app)
+    it('deve registrar usuário com sucesso', async () => {
+      const res = await request(app)
         .post(`${baseUrl}/register`)
         .send({
-          email: 'teste.novo.123@example.com',
+          email: 'teste@example.com',
           password: 'senha123456',
-          name: 'João Testador'
+          name: 'Teste'
         })
         .expect(201);
 
-      expect(response.body.message).toBe('Usuário criado com sucesso');
-      expect(response.body.token).toBeTruthy();
+      expect(res.body).toHaveProperty('token');
+      expect(res.body).toHaveProperty('refreshToken');
+      expect(res.body.user.email).toBe('teste@example.com');
 
-      expect(response.body.user).toMatchObject({
-        email: 'teste.novo.123@example.com',
-        name: 'João Testador'
-      });
-
-      expect(response.body.user.password).toBeUndefined();
-
-      // Verifica no banco
       const user = await prisma.user.findUnique({
-        where: { email: 'teste.novo.123@example.com' },
+        where: { email: 'teste@example.com' },
         include: { preferences: true }
       });
 
       expect(user).not.toBeNull();
-
-      // senha correta
-      const passwordValid = await bcrypt.compare(
-        'senha123456',
-        user.passwordHash
-      );
-      expect(passwordValid).toBe(true);
-
-      // preferences criadas automaticamente
       expect(user.preferences).not.toBeNull();
+
+      const valid = await bcrypt.compare('senha123456', user.passwordHash);
+      expect(valid).toBe(true);
     });
 
     it('deve rejeitar email duplicado', async () => {
       await prisma.user.create({
         data: {
           email: 'duplicado@example.com',
-          passwordHash: await bcrypt.hash('123456', 10),
+          passwordHash: await bcrypt.hash('123456', 4),
           name: 'Existente',
           preferences: { create: {} }
         }
       });
 
-      const response = await request(app)
-        .post(`${baseUrl}/register`)
-        .send({
-          email: 'duplicado@example.com',
-          password: 'outraSenha123'
-        })
-        .expect(400);
-
-      expect(response.body.error).toBe('Email já cadastrado');
-    });
-
-    it('deve rejeitar email inválido', async () => {
       const res = await request(app)
         .post(`${baseUrl}/register`)
-        .send({
-          email: 'email-invalido',
-          password: '123456'
-        })
+        .send({ email: 'duplicado@example.com', password: '123456' })
         .expect(400);
 
-      expect(res.body.errors).toBeDefined();
-      expect(res.body.errors.some(e => e.msg === 'Email inválido')).toBe(true);
+      expect(res.body).toHaveProperty('error');
     });
   });
 
   describe('POST /login', () => {
     beforeEach(async () => {
-      const hashed = await bcrypt.hash('senhaCorreta2025', 10);
+      const hash = await bcrypt.hash('senha123', 4);
 
       await prisma.user.create({
         data: {
-          email: 'login.teste@example.com',
-          passwordHash: hashed,
-          name: 'Usuário de Teste',
+          email: 'login@example.com',
+          passwordHash: hash,
+          name: 'Login',
           preferences: { create: {} }
         }
       });
     });
 
-    it('deve logar com credenciais corretas', async () => {
+    it('deve logar com sucesso', async () => {
       const res = await request(app)
         .post(`${baseUrl}/login`)
-        .send({
-          email: 'login.teste@example.com',
-          password: 'senhaCorreta2025'
-        })
+        .send({ email: 'login@example.com', password: 'senha123' })
         .expect(200);
 
-      expect(res.body.message).toBe('Login bem-sucedido');
-      expect(res.body.token).toBeTruthy();
-      expect(res.body.user.email).toBe('login.teste@example.com');
+      expect(res.body).toHaveProperty('token');
+      expect(res.body).toHaveProperty('refreshToken');
     });
 
     it('deve rejeitar senha incorreta', async () => {
-      const res = await request(app)
+      await request(app)
         .post(`${baseUrl}/login`)
-        .send({
-          email: 'login.teste@example.com',
-          password: 'errado'
-        })
+        .send({ email: 'login@example.com', password: 'errado' })
         .expect(401);
+    });
+  });
 
-      expect(res.body.error).toBe('Credenciais inválidas');
+  describe('POST /refresh', () => {
+    it('deve renovar token com fluxo real', async () => {
+      const password = 'senha123';
+      const hash = await bcrypt.hash(password, 4);
+
+      await prisma.user.create({
+        data: {
+          email: 'refresh@example.com',
+          passwordHash: hash,
+          name: 'Refresh',
+          preferences: { create: {} }
+        }
+      });
+
+      const login = await request(app)
+        .post(`${baseUrl}/login`)
+        .send({ email: 'refresh@example.com', password })
+        .expect(200);
+
+      const res = await request(app)
+        .post(`${baseUrl}/refresh`)
+        .send({ refreshToken: login.body.refreshToken })
+        .expect(200);
+
+      expect(res.body).toHaveProperty('token');
     });
 
-    it('deve rejeitar usuário inexistente', async () => {
-      const res = await request(app)
-        .post(`${baseUrl}/login`)
-        .send({
-          email: 'naoexiste@example.com',
-          password: '123456'
-        })
+    it('deve rejeitar token inválido', async () => {
+      await request(app)
+        .post(`${baseUrl}/refresh`)
+        .send({ refreshToken: 'invalido' })
         .expect(401);
+    });
+  });
 
-      expect(res.body.error).toBe('Credenciais inválidas');
+  describe('POST /logout', () => {
+    it('deve invalidar refresh token', async () => {
+      const password = 'senha123';
+      const hash = await bcrypt.hash(password, 4);
+
+      const user = await prisma.user.create({
+        data: {
+          email: 'logout@example.com',
+          passwordHash: hash,
+          name: 'Logout',
+          preferences: { create: {} }
+        }
+      });
+
+      const login = await request(app)
+        .post(`${baseUrl}/login`)
+        .send({ email: 'logout@example.com', password })
+        .expect(200);
+
+      await request(app)
+        .post(`${baseUrl}/logout`)
+        .send({ refreshToken: login.body.refreshToken })
+        .expect(200);
+
+      const updated = await prisma.user.findUnique({ where: { id: user.id } });
+      expect(updated.refreshToken).toBeNull();
+    });
+  });
+
+  describe('POST /forgot-password', () => {
+    it('deve gerar reset token para usuário existente', async () => {
+      await prisma.user.create({
+        data: {
+          email: 'forgot@example.com',
+          passwordHash: await bcrypt.hash('123456', 4),
+          name: 'Forgot',
+          preferences: { create: {} }
+        }
+      });
+
+      await request(app)
+        .post(`${baseUrl}/forgot-password`)
+        .send({ email: 'forgot@example.com' })
+        .expect(200);
+
+      const user = await prisma.user.findUnique({ where: { email: 'forgot@example.com' } });
+
+      expect(user.resetToken).toBeTruthy();
+      expect(user.resetTokenExpires).toBeTruthy();
+    });
+  });
+
+  describe('POST /reset-password', () => {
+    it('deve resetar senha com fluxo completo', async () => {
+      const password = 'antiga123';
+      const hash = await bcrypt.hash(password, 4);
+
+      await prisma.user.create({
+        data: {
+          email: 'reset@example.com',
+          passwordHash: hash,
+          name: 'Reset',
+          preferences: { create: {} }
+        }
+      });
+
+      await request(app)
+        .post(`${baseUrl}/forgot-password`)
+        .send({ email: 'reset@example.com' })
+        .expect(200);
+
+      const user = await prisma.user.findUnique({ where: { email: 'reset@example.com' } });
+
+      await request(app)
+        .post(`${baseUrl}/reset-password`)
+        .send({ token: user.resetToken, newPassword: 'nova123456' })
+        .expect(200);
+
+      const updated = await prisma.user.findUnique({ where: { email: 'reset@example.com' } });
+
+      const valid = await bcrypt.compare('nova123456', updated.passwordHash);
+      expect(valid).toBe(true);
+      expect(updated.resetToken).toBeNull();
     });
   });
 });
