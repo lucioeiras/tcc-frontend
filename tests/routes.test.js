@@ -79,11 +79,12 @@ describe('API Routes', () => {
       .post('/api/accounts')
       .set('Authorization', `Bearer ${token}`)
       .send(newAccount)
-      .expect(200);
+      .expect(201);
 
-    expect(createRes.body.name).toBe(newAccount.name);
-    expect(createRes.body.type).toBe(newAccount.type);
-    expect(createRes.body.balance).toBeCloseTo(newAccount.initialBalance);
+    expect(createRes.body.message).toBe('Conta criada com sucesso');
+    expect(createRes.body.account.name).toBe(newAccount.name);
+    expect(createRes.body.account.type).toBe(newAccount.type);
+    expect(createRes.body.account.balance).toBeCloseTo(newAccount.initialBalance);
 
     const listRes = await request(app)
       .get('/api/accounts')
@@ -92,7 +93,7 @@ describe('API Routes', () => {
 
     expect(Array.isArray(listRes.body)).toBe(true);
     expect(listRes.body.length).toBeGreaterThanOrEqual(1);
-    expect(listRes.body.some(acc => acc.id === createRes.body.id)).toBe(true);
+    expect(listRes.body.some(acc => acc.id === createRes.body.account.id)).toBe(true);
   });
 
   it('POST /api/transactions e GET /api/transactions', async () => {
@@ -102,9 +103,9 @@ describe('API Routes', () => {
       .post('/api/accounts')
       .set('Authorization', `Bearer ${token}`)
       .send({ name: 'Conta Transacao', type: 'WALLET', initialBalance: 100 })
-      .expect(200);
+      .expect(201);
 
-    const accountId = account.body.id;
+    const accountId = account.body.account.id;
 
     const transactionPayload = {
       accountId,
@@ -140,7 +141,7 @@ describe('API Routes', () => {
       .post('/api/accounts')
       .set('Authorization', `Bearer ${token}`)
       .send({ name: 'Conta Chatbot', type: 'SAVINGS', initialBalance: 300 })
-      .expect(200);
+      .expect(201);
 
     const res = await request(app)
       .post('/api/chat/message')
