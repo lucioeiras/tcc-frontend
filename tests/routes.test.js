@@ -118,11 +118,12 @@ describe('API Routes', () => {
       .post('/api/transactions')
       .set('Authorization', `Bearer ${token}`)
       .send(transactionPayload)
-      .expect(200);
+      .expect(201);
 
-    expect(transactionRes.body.accountId).toBe(accountId);
-    expect(transactionRes.body.amount).toBe(transactionPayload.amount);
-    expect(transactionRes.body.type).toBe('INCOME');
+    expect(transactionRes.body.message).toBe('Transação criada com sucesso');
+    expect(transactionRes.body.transaction.accountId).toBe(accountId);
+    expect(transactionRes.body.transaction.amount).toBe(transactionPayload.amount);
+    expect(transactionRes.body.transaction.type).toBe('INCOME');
 
     const transactionsList = await request(app)
       .get('/api/transactions')
@@ -131,7 +132,7 @@ describe('API Routes', () => {
 
     expect(Array.isArray(transactionsList.body)).toBe(true);
     expect(transactionsList.body.length).toBeGreaterThanOrEqual(1);
-    expect(transactionsList.body.some(t => t.id === transactionRes.body.id)).toBe(true);
+    expect(transactionsList.body.some(t => t.id === transactionRes.body.transaction.id)).toBe(true);
   });
 
   it('POST /api/chat/message deve responder saldo corretamente', async () => {
