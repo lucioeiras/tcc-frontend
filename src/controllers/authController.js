@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
 const { prisma } = require('../config/prisma');
+const authUtils = require('../utils/authUtils');
 
 // Registro
 exports.register = async (req, res) => {
@@ -21,7 +22,7 @@ exports.register = async (req, res) => {
       return res.status(400).json({ error: 'Email já cadastrado' });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await authUtils.hashPassword(password);
 
     const user = await prisma.user.create({
       data: {
@@ -34,17 +35,8 @@ exports.register = async (req, res) => {
       }
     });
 
-    const token = jwt.sign(
-      { userId: user.id, email: user.email },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
-    );
-
-    const refreshToken = jwt.sign(
-      { userId: user.id },
-      process.env.JWT_SECRET,
-      { expiresIn: '30d' }
-    );
+    const token = authUtils.generateToken({ userId: user.id, email: user.email });
+    const refreshToken = authUtils.generateRefreshToken({ userId: user.id });
 
     await prisma.user.update({
       where: { id: user.id },
@@ -53,11 +45,7 @@ exports.register = async (req, res) => {
 
     res.status(201).json({
       message: 'Usuário criado com sucesso',
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name
-      },
+      user: authUtils.sanitizeUser(user),
       token,
       refreshToken
     });
@@ -86,23 +74,14 @@ exports.login = async (req, res) => {
       return res.status(401).json({ error: 'Credenciais inválidas' });
     }
 
-    const validPassword = await bcrypt.compare(password, user.passwordHash);
+    const validPassword = await authUtils.comparePasswords(password, user.passwordHash);
 
     if (!validPassword) {
       return res.status(401).json({ error: 'Credenciais inválidas' });
     }
 
-    const token = jwt.sign(
-      { userId: user.id, email: user.email },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
-    );
-
-    const refreshToken = jwt.sign(
-      { userId: user.id },
-      process.env.JWT_SECRET,
-      { expiresIn: '30d' }
-    );
+    const token = authUtils.generateToken({ userId: user.id, email: user.email });
+    const refreshToken = authUtils.generateRefreshToken({ userId: user.id });
 
     await prisma.user.update({
       where: { id: user.id },
@@ -111,11 +90,7 @@ exports.login = async (req, res) => {
 
     res.json({
       message: 'Login bem-sucedido',
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name
-      },
+      user: authUtils.sanitizeUser(user),
       token,
       refreshToken
     });
@@ -144,11 +119,7 @@ exports.refresh = async (req, res) => {
       return res.status(401).json({ error: 'Refresh token inválido' });
     }
 
-    const token = jwt.sign(
-      { userId: user.id, email: user.email },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
-    );
+    const token = authUtils.generateToken({ userId: user.id, email: user.email });
 
     res.json({
       message: 'Token renovado',
@@ -200,11 +171,7 @@ exports.forgotPassword = async (req, res) => {
       return res.json({ message: 'Se o email existir, um link de redefinição foi enviado' });
     }
 
-    const resetToken = jwt.sign(
-      { userId: user.id },
-      process.env.JWT_SECRET,
-      { expiresIn: '1h' }
-    );
+    const resetToken = authUtils.generateResetToken({ userId: user.id });
 
     await prisma.user.update({
       where: { id: user.id },
@@ -244,7 +211,7 @@ exports.resetPassword = async (req, res) => {
       return res.status(400).json({ error: 'Token inválido ou expirado' });
     }
 
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const hashedPassword = await authUtils.hashPassword(newPassword);
 
     await prisma.user.update({
       where: { id: user.id },
