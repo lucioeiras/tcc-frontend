@@ -219,7 +219,7 @@ Este projeto utilizou ferramentas de IA (Cursor AI / Claude) como auxílio no de
 
 - Geração e refinamento de testes unitários
 - Configuração do pipeline CI/CD (GitHub Actions)
-- Criação do script de notificação por e-mail
+- Configuração do script de notificação por e-mail
 - Configuração do ESLint
 - Estruturação do README
 
