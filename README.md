@@ -217,11 +217,10 @@ docker compose logs -f     # Acompanhar logs
 
 Este projeto utilizou ferramentas de IA (Cursor AI / Claude) como auxílio no desenvolvimento, incluindo:
 
-- Geração e refinamento de testes unitários
+- Refinamento de testes unitários
 - Configuração do pipeline CI/CD (GitHub Actions)
 - Configuração do script de notificação por e-mail
 - Configuração do ESLint
-- Estruturação do README
 
 Os resultados foram revisados, adaptados e validados manualmente pela equipe.
 
