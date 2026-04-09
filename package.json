@@ -1,10 +1,10 @@
 {
-  "name": "tcc-backend",
+  "name": "financial-ai-server",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "npx jest --runInBand",
+    "test": "jest --runInBand --coverage",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:related": "jest --watch --onlyChanged",
@@ -14,13 +14,23 @@
   },
   "jest": {
     "setupFilesAfterEnv": ["./tests/setup.js"],
-    "maxWorkers": 1
+    "maxWorkers": 1,
+    "collectCoverage": true,
+    "coverageDirectory": "artifacts/coverage",
+    "reporters": [
+      "default",
+      ["jest-junit", {
+        "outputDirectory": "./artifacts",
+        "outputName": "test-results.xml"
+      }]
+    ]
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "jest-junit": "^13.0.0",
     "@prisma/adapter-pg": "^7.4.2",
     "@prisma/client": "^6.19.2",
     "bcrypt": "^5.1.0",
