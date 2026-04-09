@@ -142,7 +142,7 @@ jobs:
       # Tageia e publica a imagem com :latest e :sha
       - name: Tag e push da imagem para ghcr.io
         run: |
-          IMAGE_NAME=ghcr.io/${{ github.repository_owner }}/tcc-backend
+          IMAGE_NAME=ghcr.io/$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')/tcc-backend
           docker tag tcc-backend:${{ github.sha }} $IMAGE_NAME:latest
           docker tag tcc-backend:${{ github.sha }} $IMAGE_NAME:${{ github.sha }}
           docker push $IMAGE_NAME:latest
