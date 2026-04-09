@@ -124,7 +124,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: [build, test]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/testes-pipeline'
 
     steps:
       - name: Download do artifact de build
