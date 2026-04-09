@@ -58,6 +58,11 @@ pipeline {
             }
             post {
                 always {
+                    echo 'Publicando artifacts...'
+
+                    archiveArtifacts artifacts: 'artifacts/**', fingerprint: true
+                    junit 'artifacts/test-results.xml'
+
                     sh '''
                         docker compose -p ${TEST_PROJECT} logs --tail 100 || true
                         docker compose -p ${TEST_PROJECT} down -v || true

@@ -19,6 +19,7 @@ build/
 
 # Cobertura de testes
 coverage/
+artifacts/
 
 # Cache
 .cache/
