@@ -71,14 +71,16 @@ jobs:
       - name: Run tests
         run: docker compose exec -T app npm test
 
+      - name: Debug artifacts
+        run: |
+          echo "Arquivos gerados:"
+          ls -R artifacts || true
+
       - name: Upload test artifacts
-        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: test-artifacts
-          path: |
-            artifacts/coverage
-            artifacts/test-results.xml
+          path: artifacts
 
       - name: Stop and remove containers
         if: always()
