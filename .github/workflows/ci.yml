@@ -71,9 +71,17 @@ jobs:
       - name: Run tests
         run: docker compose exec -T app npm test
 
+      - name: Copy artifacts from container
+        run: |
+          CONTAINER_ID=$(docker compose ps -q app)
+
+          mkdir -p artifacts
+
+          docker cp $CONTAINER_ID:/app/artifacts ./artifacts || true
+
       - name: Debug artifacts
         run: |
-          echo "Arquivos gerados:"
+          echo "Arquivos no host:"
           ls -R artifacts || true
 
       - name: Upload test artifacts
