@@ -47,6 +47,7 @@ export const Button = ({
 
   return (
     <TouchableOpacity
+      accessibilityRole="button"
       className={
         buttonStyles[type] +
         widthStyles[width] +
