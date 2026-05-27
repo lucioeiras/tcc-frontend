@@ -8,7 +8,7 @@ import { StatusBar } from 'expo-status-bar';
 
 import { getItem } from 'expo-secure-store';
 
-import { Button } from 'components/Button';
+import { Button } from '../components/Button';
 
 import './global.css';
 
@@ -19,7 +19,7 @@ export default function App() {
 
   useEffect(() => {
     if (jwt) {
-      router.navigate('/user');
+      router.navigate('/resume');
     }
   }, [jwt]);
 

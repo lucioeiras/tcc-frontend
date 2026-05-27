@@ -9,9 +9,9 @@ import { StatusBar } from 'expo-status-bar';
 
 import FontAwesome from '@expo/vector-icons/FontAwesome6';
 
-import { Button } from 'components/Button';
+import { Button } from '../../../components/Button';
 
-export default function Home() {
+export default function Resume() {
   const router = useRouter();
 
   const jwt = getItem('jwt');

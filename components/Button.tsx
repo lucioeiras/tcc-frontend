@@ -27,10 +27,10 @@ export const Button = ({
   };
 
   const textStyles = {
-    primary: 'font-manrope-bold text-lg text-white',
-    secondary: 'font-manrope-bold text-lg text-purple-800',
-    tertiary: 'font-manrope-bold text-lg text-slate-800',
-    naked: 'font-manrope-bold text-base text-purple-800',
+    primary: 'font-manrope-semibold text-lg text-white',
+    secondary: 'font-manrope-semibold text-lg text-purple-800',
+    tertiary: 'font-manrope-semibold text-lg text-slate-800',
+    naked: 'font-manrope-semibold text-base text-purple-800',
   };
 
   const widthStyles = {

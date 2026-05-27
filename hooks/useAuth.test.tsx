@@ -75,7 +75,7 @@ describe('useAuth', () => {
       'usuario',
       JSON.stringify({ id: 1, name: 'Ana' })
     );
-    expect(navigate).toHaveBeenCalledWith('/user');
+    expect(navigate).toHaveBeenCalledWith('/resume');
   });
 
   it('configura o fluxo de cadastro com sucesso', async () => {
@@ -120,6 +120,6 @@ describe('useAuth', () => {
       'usuario',
       JSON.stringify({ id: 2, name: 'Bruno' })
     );
-    expect(navigate).toHaveBeenCalledWith('/user');
+    expect(navigate).toHaveBeenCalledWith('/resume');
   });
 });

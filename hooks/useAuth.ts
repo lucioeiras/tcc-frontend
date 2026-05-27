@@ -33,7 +33,7 @@ export const useSignIn = () => {
         await setItemAsync('usuario', JSON.stringify(user));
       }
 
-      router.navigate('/user');
+      router.navigate('/resume');
     },
     onError: (error) => {
       if (isAxiosError(error)) {
@@ -74,11 +74,11 @@ export const useSignUp = () => {
         await setItemAsync('usuario', JSON.stringify(user));
       }
 
-      router.navigate('/user');
+      router.navigate('/resume');
     },
     onError: (error) => {
       if (isAxiosError(error)) {
-        alert(error.response?.data?.message || 'Erro ao criar conta. Tente novamente.');
+        alert(error.response?.data?.message || error);
       } else {
         alert('Erro desconhecido. Tente novamente.');
       }
