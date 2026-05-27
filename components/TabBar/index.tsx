@@ -2,7 +2,7 @@ import React from 'react';
 import { View, useWindowDimensions } from 'react-native';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
-import { useRouter, usePathname } from 'expo-router';
+import { usePathname } from 'expo-router';
 import {
   StarsOutline,
   StarsBold,
