@@ -35,10 +35,20 @@ export default function CustomTabBar(props: BottomTabBarProps) {
   return (
     <View className="pointer-events-box-none absolute right-0 bottom-8 left-0 items-center justify-center bg-transparent">
       <View
-        className="relative flex-row rounded-full bg-white shadow-2xl shadow-black"
-        style={{ width: TAB_BAR_WIDTH, padding: CONTAINER_PADDING }}>
+        className="relative flex-row rounded-full bg-white"
+        style={{
+          width: TAB_BAR_WIDTH,
+          padding: CONTAINER_PADDING,
+          // iOS
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 0 },
+          shadowOpacity: 0.2,
+          shadowRadius: 16,
+          // Android
+          elevation: 12,
+        }}>
         <Animated.View
-          className="absolute top-2 bottom-2 left-2 rounded-full bg-gray-100"
+          className="absolute top-2 bottom-2 left-2 rounded-full border border-gray-300 bg-gray-100"
           style={[{ width: TAB_WIDTH }, animatedBackgroundStyle]}
         />
 
