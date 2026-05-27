@@ -9,17 +9,19 @@ import { StatusBar } from 'expo-status-bar';
 
 import FontAwesome from '@expo/vector-icons/FontAwesome6';
 
-import { Button } from '../../../components/Button';
+import { Button } from '@/components/Button';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Resume() {
   const router = useRouter();
+  const { setSigned } = useAuth();
 
   const jwt = getItem('jwt');
   const user = getItem('usuario');
 
   useEffect(() => {
     if (!jwt) {
-      router.navigate('/');
+      router.replace('/');
     }
   }, [jwt]);
 
@@ -27,7 +29,8 @@ export default function Resume() {
     await deleteItemAsync('jwt');
     await deleteItemAsync('usuario');
 
-    router.navigate('/');
+    setSigned(false);
+    router.replace('/');
   };
 
   return (

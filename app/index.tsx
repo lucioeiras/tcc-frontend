@@ -1,27 +1,21 @@
-import { useEffect } from 'react';
-
 import { Text, View, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { useRouter } from 'expo-router';
+import { Redirect, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
-import { getItem } from 'expo-secure-store';
-
-import { Button } from '../components/Button';
+import { Button } from '@/components/Button';
+import { useAuth } from '@/contexts/AuthContext';
 
 import './global.css';
 
 export default function App() {
   const router = useRouter();
+  const { signed } = useAuth();
 
-  const jwt = getItem('jwt');
-
-  useEffect(() => {
-    if (jwt) {
-      router.navigate('/resume');
-    }
-  }, [jwt]);
+  if (signed) {
+    return <Redirect href="/(tabs)/resume" />;
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -47,13 +41,13 @@ export default function App() {
             title="Iniciar sessão"
             type="tertiary"
             width="fill"
-            onPress={() => router.navigate('/auth/signin')}
+            onPress={() => router.replace('/auth/signin')}
           />
           <Button
             title="Ainda não possuo uma conta"
             type="primary"
             width="fill"
-            onPress={() => router.navigate('/auth/signup')}
+            onPress={() => router.replace('/auth/signup')}
           />
         </View>
       </View>

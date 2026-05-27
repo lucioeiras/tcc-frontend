@@ -12,7 +12,7 @@ import {
   Manrope_700Bold,
 } from '@expo-google-fonts/manrope';
 
-import CustomTabBar from '../../components/TabBar';
+import CustomTabBar from '@/components/TabBar';
 
 export default function RootLayout() {
   const queryClient = new QueryClient();
@@ -41,8 +41,8 @@ export default function RootLayout() {
         screenOptions={{
           headerShown: false,
         }}>
-        <Tabs.Screen name="/resume/index" />
-        <Tabs.Screen name="/assistant/index" />
+        <Tabs.Screen name="resume/index" />
+        <Tabs.Screen name="assistant/index" />
       </Tabs>
     </QueryClientProvider>
   );

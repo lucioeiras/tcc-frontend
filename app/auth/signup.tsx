@@ -2,14 +2,15 @@ import React, { useState } from 'react';
 
 import { Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-import { useRouter } from 'expo-router';
+import { Redirect, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
-import { Button } from '../../components/Button';
-import { Input } from '../../components/Input';
-import { useSignUp } from '../../hooks/useAuth';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { Button } from '@/components/Button';
+import { Input } from '@/components/Input';
+import { useSignUp } from '@/hooks/auth/useSignUp';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function SignUp() {
   const [name, setName] = useState('');
@@ -18,8 +19,12 @@ export default function SignUp() {
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const signUp = useSignUp();
-
+  const { signed } = useAuth();
   const router = useRouter();
+
+  if (signed) {
+    return <Redirect href="/(tabs)/resume" />;
+  }
 
   const handleSignUp = () => {
     if (!name || !email || !password || !confirmPassword) {
@@ -99,7 +104,7 @@ export default function SignUp() {
               title="Já possuo uma conta"
               type="tertiary"
               width="fill"
-              onPress={() => router.navigate('/auth/signin')}
+              onPress={() => router.replace('/auth/signin')}
             />
           </View>
         </View>

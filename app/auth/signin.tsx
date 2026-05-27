@@ -3,13 +3,14 @@ import { useState } from 'react';
 import { Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { useRouter } from 'expo-router';
+import { Redirect, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
-import { Button } from '../../components/Button';
-import { Input } from '../../components/Input';
+import { Button } from '@/components/Button';
+import { Input } from '@/components/Input';
 
-import { useSignIn } from '../../hooks/useAuth';
+import { useSignIn } from '@/hooks/auth/useSignIn';
+import { useAuth } from '@/contexts/AuthContext';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 export default function SignIn() {
@@ -17,8 +18,12 @@ export default function SignIn() {
   const [password, setPassword] = useState('');
 
   const { mutate } = useSignIn();
-
+  const { signed } = useAuth();
   const router = useRouter();
+
+  if (signed) {
+    return <Redirect href="/(tabs)/resume" />;
+  }
 
   const handleSignIn = () => {
     if (!email || !password) {
@@ -76,7 +81,7 @@ export default function SignIn() {
               title="Ainda não possuo uma conta"
               type="tertiary"
               width="fill"
-              onPress={() => router.navigate('/auth/signup')}
+              onPress={() => router.replace('/auth/signup')}
             />
 
             <Button className="mt-4" title="Esqueci minha senha" type="naked" onPress={() => {}} />
