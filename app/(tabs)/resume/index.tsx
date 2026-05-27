@@ -11,6 +11,15 @@ import FontAwesome from '@expo/vector-icons/FontAwesome6';
 
 import { Button } from '@/components/Button';
 import { useAuth } from '@/contexts/AuthContext';
+import { ResumeCard } from '@/components/ResumeCard';
+import {
+  ArrowDownOutline,
+  ArrowUpOutline,
+  CashOutBold,
+  CourseDownOutline,
+  DollarMinimalisticBold,
+  StarBold,
+} from '@solar-icons/react-native';
 
 export default function Resume() {
   const router = useRouter();
@@ -37,9 +46,7 @@ export default function Resume() {
     <SafeAreaView>
       <StatusBar style="auto" backgroundColor="#ffffff" />
 
-      <View className="items-center justify-center p-10">
-        <Text className="mb-8">{user}</Text>
-
+      <View className="items-center justify-center bg-white p-4">
         <Button
           type="tertiary"
           icon={<FontAwesome name="arrow-right-from-bracket" size={16} color="#475569" />}
@@ -47,6 +54,49 @@ export default function Resume() {
           width="hug"
           onPress={handleSignOut}
         />
+
+        <View className="w-full flex-row gap-2">
+          <View className="flex-1 gap-2">
+            <ResumeCard type="positive" title="Entradas" value="32.978,45" Icon={ArrowUpOutline} />
+            <ResumeCard
+              type="positive"
+              title="Melhor produto"
+              value="7.342,89"
+              description="Bolo no Pote (x48)"
+              Icon={StarBold}
+            />
+            <ResumeCard
+              type="positive"
+              title="Maior lucro"
+              value="5.678,12"
+              description="Encomendas"
+              Icon={DollarMinimalisticBold}
+            />
+          </View>
+
+          <View className="flex-1 gap-2">
+            <ResumeCard
+              type="negative"
+              title="Entradas"
+              value="32.978,45"
+              Icon={ArrowDownOutline}
+            />
+            <ResumeCard
+              type="negative"
+              title="Melhor produto"
+              value="7.342,89"
+              description="Bolo no Pote (x48)"
+              Icon={CourseDownOutline}
+            />
+            <ResumeCard
+              type="negative"
+              title="Maior lucro"
+              value="5.678,12"
+              description="Encomendas"
+              Icon={CashOutBold}
+            />
+          </View>
+        </View>
       </View>
     </SafeAreaView>
   );

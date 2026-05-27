@@ -40,6 +40,7 @@ export default function RootLayout() {
         tabBar={(props) => <CustomTabBar {...props} />}
         screenOptions={{
           headerShown: false,
+          sceneStyle: { backgroundColor: '#ffffff' },
         }}>
         <Tabs.Screen name="resume/index" />
         <Tabs.Screen name="assistant/index" />
