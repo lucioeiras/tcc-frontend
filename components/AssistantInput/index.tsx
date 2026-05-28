@@ -2,12 +2,18 @@ import { Text, TextInput, TextInputProps, View } from 'react-native';
 import { Button } from '../Button';
 import { PlainBold } from '@solar-icons/react-native';
 
-export const AssistantInput = ({ value, ...props }: TextInputProps) => {
-  console.log(value);
+type AssistantInputProps = TextInputProps & {
+  handleQuestion: (question: string) => void;
+};
 
+export const AssistantInput = ({
+  value,
+  handleQuestion,
+  ...props
+}: AssistantInputProps) => {
   return (
     <View
-      className="max-w-full gap-8 rounded-4xl border border-gray-300 bg-white p-6 mx-5"
+      className={`max-w-full border border-gray-300 bg-white mx-5 mb-36 ${value === '' ? 'flex-row gap-4 items-center py-3 pr-3 pl-6 rounded-full' : 'gap-8 rounded-4xl p-6'}`}
       style={{
         // iOS
         shadowColor: '#000',
@@ -20,7 +26,7 @@ export const AssistantInput = ({ value, ...props }: TextInputProps) => {
     >
       <TextInput
         placeholder="Pergunte algo..."
-        className="font-manrope-medium w-full text-lg leading-none text-slate-800 placeholder:leading-none placeholder:text-slate-400"
+        className="font-manrope-medium grow text-lg leading-none text-slate-800 placeholder:leading-none placeholder:text-slate-400"
         value={value}
         multiline
         numberOfLines={6}
@@ -34,6 +40,7 @@ export const AssistantInput = ({ value, ...props }: TextInputProps) => {
         icon={
           <PlainBold size={24} color={value !== '' ? '#FFFFFF' : '#A0AEC0'} />
         }
+        onPress={() => value && value !== '' && handleQuestion(value)}
       />
     </View>
   );

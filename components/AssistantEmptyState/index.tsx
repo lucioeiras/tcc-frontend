@@ -1,7 +1,7 @@
-import { getItem } from 'expo-secure-store';
 import { ScrollView, Text, View } from 'react-native';
 import { DefaultQuestion } from '../DefaultQuestion';
 import { defaultQuestions } from '@/utils/getDefaultQuestions';
+import { useAuth } from '@/contexts/AuthContext';
 
 type AssistantEmptyStateProps = {
   setQuery: (query: string) => void;
@@ -12,7 +12,7 @@ export const AssistantEmptyState = ({
   setQuery,
   showMessage,
 }: AssistantEmptyStateProps) => {
-  const user = JSON.parse(getItem('usuario') || '{}');
+  const { user } = useAuth();
 
   return (
     <>

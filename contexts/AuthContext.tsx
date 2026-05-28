@@ -1,11 +1,27 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from 'react';
 import { getItemAsync, deleteItemAsync } from 'expo-secure-store';
 import { useRouter, useSegments, useNavigationContainerRef } from 'expo-router';
 
+type User = {
+  id: number | string;
+  name: string;
+  email?: string;
+  [key: string]: any;
+};
+
 type AuthContextType = {
   signed: boolean;
-  setSigned: (value: boolean) => void;
+  setSigned: (value: boolean) => void | Promise<void>;
   signOut: () => Promise<void>;
+  jwt: string | null;
+  user: User | null;
+  usuario: User | null;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -18,8 +34,7 @@ function useProtectedRoute(signed: boolean | null) {
   useEffect(() => {
     if (!navigationRef.isReady() || signed === null) return;
 
-    const inAuthGroup =
-      segments[0] === 'auth' || segments[0] === 'index' || segments[0] === undefined;
+    const inAuthGroup = segments[0] === 'auth' || segments[0] === undefined;
 
     if (!signed && !inAuthGroup) {
       router.replace('/');
@@ -30,21 +45,51 @@ function useProtectedRoute(signed: boolean | null) {
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [signed, setSigned] = useState<boolean | null>(null);
+  const [signed, setSignedState] = useState<boolean | null>(null);
+  const [jwt, setJwt] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
       const token = await getItemAsync('jwt');
-      setSigned(!!token);
+      const userStr = await getItemAsync('usuario');
+
+      if (token) {
+        setJwt(token);
+        setUser(userStr ? JSON.parse(userStr) : null);
+        setSignedState(true);
+      } else {
+        setJwt(null);
+        setUser(null);
+        setSignedState(false);
+      }
     };
 
     checkAuth();
   }, []);
 
+  const setSigned = async (value: boolean) => {
+    if (value) {
+      const token = await getItemAsync('jwt');
+      const userStr = await getItemAsync('usuario');
+
+      setJwt(token);
+      setUser(userStr ? JSON.parse(userStr) : null);
+      setSignedState(true);
+    } else {
+      setJwt(null);
+      setUser(null);
+      setSignedState(false);
+    }
+  };
+
   const signOut = async () => {
     await deleteItemAsync('jwt');
     await deleteItemAsync('usuario');
-    setSigned(false);
+
+    setJwt(null);
+    setUser(null);
+    setSignedState(false);
   };
 
   useProtectedRoute(signed);
@@ -52,14 +97,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   if (signed === null) return null;
 
   return (
-    <AuthContext.Provider value={{ signed, setSigned, signOut }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider
+      value={{ signed, setSigned, signOut, jwt, user, usuario: user }}
+    >
+      {children}
+    </AuthContext.Provider>
   );
 }
 
 export function useAuth() {
   const context = useContext(AuthContext);
 
-  if (!context) throw new Error('O contexto AuthProvider é necessário para usar useAuth');
+  if (!context)
+    throw new Error('O contexto AuthProvider é necessário para usar useAuth');
 
   return context;
 }

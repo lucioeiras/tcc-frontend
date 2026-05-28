@@ -29,7 +29,7 @@ export const Tab = ({ name, path, ActiveIcon, InactiveIcon }: TabProps) => {
 
   return (
     <TouchableOpacity
-      className="z-10 flex-1 flex-row items-center justify-center gap-2 py-5"
+      className="z-10 flex-1 flex-row items-center justify-center gap-2 py-4"
       activeOpacity={0.8}
       onPress={() => !isActive && router.push(path)}
     >
@@ -39,7 +39,7 @@ export const Tab = ({ name, path, ActiveIcon, InactiveIcon }: TabProps) => {
         <InactiveIcon size={20} color={colors.inactive} className="mr-2" />
       )}
       <Text
-        className={`text-base ${isActive ? 'font-manrope-bold text-slate-800' : 'font-manrope text-gray-500'}`}
+        className={`text-lg ${isActive ? 'font-manrope-bold text-slate-800' : 'font-manrope text-gray-500'}`}
       >
         {name}
       </Text>
