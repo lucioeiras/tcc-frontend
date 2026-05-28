@@ -28,7 +28,7 @@ export default function Assistant() {
 
         <ScrollView
           style={{ flex: 1 }}
-          contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: 120 }}
           keyboardShouldPersistTaps="handled"
         >
           {questions.length === 0 && (

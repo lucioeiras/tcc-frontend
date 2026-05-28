@@ -51,7 +51,7 @@ export default function Resume() {
 
           <InsightCard text="Sua margem de lucro subiu 5% este mês porque você gastou menos com fornecedores." />
 
-          <View className="mt-4 mb-40 w-full flex-row gap-2">
+          <View className="mt-4 mb-44 w-full flex-row gap-2">
             <View className="flex-1 gap-2">
               <ResumeCard
                 type="positive"
