@@ -1,10 +1,15 @@
-import { TouchableOpacity, Text, TouchableOpacityProps, View } from 'react-native';
+import {
+  TouchableOpacity,
+  Text,
+  TouchableOpacityProps,
+  View,
+} from 'react-native';
 
 import FontAwesome from '@expo/vector-icons/FontAwesome6';
 
 interface ButtonProps extends TouchableOpacityProps {
   title?: string;
-  type: 'primary' | 'secondary' | 'tertiary' | 'naked';
+  type: 'primary' | 'secondary' | 'tertiary' | 'naked' | 'disabled';
   width?: 'fill' | 'hug';
   styles?: string;
   icon?: typeof FontAwesome;
@@ -20,17 +25,19 @@ export const Button = ({
   ...props
 }: ButtonProps) => {
   const buttonStyles = {
-    primary: 'rounded-full bg-purple-600',
-    secondary: 'rounded-full bg-white border-1 border-purple-300',
-    tertiary: 'rounded-full bg-white border-1 border-slate-300',
-    naked: 'rounded-full bg-transparent',
+    primary: 'bg-purple-600',
+    secondary: 'bg-white border-1 border-purple-300',
+    tertiary: 'bg-white border-1 border-slate-300',
+    naked: 'bg-transparent',
+    disabled: 'bg-gray-100',
   };
 
   const textStyles = {
-    primary: 'font-manrope-semibold text-lg text-white',
-    secondary: 'font-manrope-semibold text-lg text-purple-800',
-    tertiary: 'font-manrope-semibold text-lg text-slate-800',
-    naked: 'font-manrope-semibold text-base text-purple-800',
+    primary: 'text-lg text-white',
+    secondary: 'text-lg text-purple-800',
+    tertiary: 'text-lg text-slate-800',
+    naked: 'text-base text-purple-800',
+    disabled: 'text-lg text-gray-500',
   };
 
   const widthStyles = {
@@ -52,11 +59,17 @@ export const Button = ({
         buttonStyles[type] +
         widthStyles[width] +
         iconOrientationStyles[iconOrientation] +
-        paddingStyle
+        paddingStyle +
+        ' rounded-full font-manrope-semibold'
       }
-      {...props}>
+      {...props}
+    >
       {icon && (
-        <View className={title && (iconOrientation === 'horizontal' ? 'mr-4' : 'mb-2')}>
+        <View
+          className={
+            title && (iconOrientation === 'horizontal' ? 'mr-4' : 'mb-2')
+          }
+        >
           {icon}
         </View>
       )}
