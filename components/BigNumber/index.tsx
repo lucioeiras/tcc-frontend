@@ -11,7 +11,7 @@ type BigNumberProps = {
 
 export const BigNumber = ({ title, value, percentage, description, type }: BigNumberProps) => {
   return (
-    <View className="mb-3 w-full items-center gap-1">
+    <View className="mb-7 w-full items-center gap-1">
       <Text className="font-manrope-medium text-center text-lg text-gray-600">{title}</Text>
 
       <View className="mt-3 flex-row items-end gap-1">

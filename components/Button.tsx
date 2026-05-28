@@ -43,7 +43,7 @@ export const Button = ({
     horizontal: ' flex-row',
   };
 
-  const paddingStyle = title ? ' px-8 py-4' : ' p-4';
+  const paddingStyle = title ? ' px-8 py-4' : ' p-3';
 
   return (
     <TouchableOpacity
