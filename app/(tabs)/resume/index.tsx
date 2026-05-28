@@ -13,6 +13,7 @@ import { Button } from '@/components/Button';
 import { useAuth } from '@/contexts/AuthContext';
 import { ResumeCard } from '@/components/ResumeCard';
 import {
+  AltArrowUpBold,
   ArrowDownOutline,
   ArrowUpOutline,
   CashOutBold,
@@ -21,6 +22,7 @@ import {
   StarBold,
 } from '@solar-icons/react-native';
 import { InsightCard } from '@/components/InsightCard';
+import { BigNumber } from '@/components/BigNumber';
 
 export default function Resume() {
   const router = useRouter();
@@ -54,6 +56,14 @@ export default function Resume() {
           iconOrientation="horizontal"
           width="hug"
           onPress={handleSignOut}
+        />
+
+        <BigNumber
+          title="Saldo do mês"
+          value="123.456,78"
+          percentage={5}
+          description="a mais que o mês anterior"
+          type="positive"
         />
 
         <InsightCard text="Sua margem de lucro subiu 5% este mês porque você gastou menos com fornecedores." />
