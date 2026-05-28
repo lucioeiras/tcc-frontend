@@ -10,7 +10,7 @@ type CardProps = {
 
 export const ResumeCard = ({ type, title, value, description, Icon }: CardProps) => {
   return (
-    <View className="gap-4 rounded-3xl border border-gray-300 p-6">
+    <View className="gap-4 rounded-4xl border border-gray-300 p-6">
       <View
         className={`p-2 ${type === 'positive' ? 'bg-green-500/15' : 'bg-red-500/10'} h-10 w-10 items-center justify-center rounded-lg`}>
         <Icon size={20} color={type === 'positive' ? '#3DA267' : '#C53030'} />

@@ -20,6 +20,7 @@ import {
   DollarMinimalisticBold,
   StarBold,
 } from '@solar-icons/react-native';
+import { InsightCard } from '@/components/InsightCard';
 
 export default function Resume() {
   const router = useRouter();
@@ -46,7 +47,7 @@ export default function Resume() {
     <SafeAreaView>
       <StatusBar style="auto" backgroundColor="#ffffff" />
 
-      <View className="items-center justify-center bg-white p-4">
+      <View className="items-center justify-center gap-4 bg-white p-4">
         <Button
           type="tertiary"
           icon={<FontAwesome name="arrow-right-from-bracket" size={16} color="#475569" />}
@@ -54,6 +55,8 @@ export default function Resume() {
           width="hug"
           onPress={handleSignOut}
         />
+
+        <InsightCard text="Sua margem de lucro subiu 5% este mês porque você gastou menos com fornecedores." />
 
         <View className="w-full flex-row gap-2">
           <View className="flex-1 gap-2">
