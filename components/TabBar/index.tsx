@@ -1,7 +1,10 @@
 import React from 'react';
 import { View, useWindowDimensions } from 'react-native';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import Animated, {
+  useAnimatedStyle,
+  withTiming,
+} from 'react-native-reanimated';
 import { usePathname } from 'expo-router';
 import {
   StarsOutline,
@@ -33,7 +36,7 @@ export default function CustomTabBar(props: BottomTabBarProps) {
   });
 
   return (
-    <View className="pointer-events-box-none absolute right-0 bottom-8 left-0 items-center justify-center bg-transparent">
+    <View className="pointer-events-box-none absolute right-0 bottom-8 left-0 items-center justify-center bg-transparent mb-2">
       <View
         className="relative flex-row rounded-full bg-white"
         style={{
@@ -46,9 +49,10 @@ export default function CustomTabBar(props: BottomTabBarProps) {
           shadowRadius: 16,
           // Android
           elevation: 12,
-        }}>
+        }}
+      >
         <Animated.View
-          className="absolute top-2 bottom-2 left-2 rounded-full border border-gray-300 bg-gray-100"
+          className="absolute top-2 bottom-2 left-2 rounded-full border border-gray-200 bg-gray-100"
           style={[{ width: TAB_WIDTH }, animatedBackgroundStyle]}
         />
 
