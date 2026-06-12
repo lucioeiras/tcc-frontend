@@ -5,6 +5,7 @@ import { useMutation } from '@tanstack/react-query';
 
 import { api } from '@/services/api';
 import { useAuth } from '@/contexts/AuthContext';
+import { getApiErrorMessage } from '@/utils/getApiErrorMessage';
 
 type SignInProps = {
   email: string;
@@ -26,18 +27,22 @@ export const useSignIn = () => {
   return useMutation({
     mutationFn: signIn,
     onSuccess: async (data) => {
-      const { user, token } = data;
+      const { user, token, refreshToken } = data;
 
       if (token) {
         await setItemAsync('jwt', token);
         await setItemAsync('usuario', JSON.stringify(user));
+
+        if (refreshToken) {
+          await setItemAsync('refreshToken', refreshToken);
+        }
       }
 
       setSigned(true);
     },
     onError: (error) => {
       if (isAxiosError(error)) {
-        alert(error.response?.data?.message || error);
+        alert(getApiErrorMessage(error.response?.data));
         console.log(error);
       } else {
         alert('Erro desconhecido. Tente novamente.');

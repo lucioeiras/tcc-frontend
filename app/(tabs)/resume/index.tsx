@@ -1,19 +1,18 @@
-import { useEffect } from 'react';
+import { useCallback } from 'react';
 
-import { ScrollView, View } from 'react-native';
+import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { useRouter } from 'expo-router';
-import { getItem } from 'expo-secure-store';
 import { StatusBar } from 'expo-status-bar';
+import { useFocusEffect } from 'expo-router';
 
 import {
   ArrowDownOutline,
   ArrowUpOutline,
   CashOutBold,
-  CourseDownOutline,
   DollarMinimalisticBold,
   StarBold,
+  WalletBold,
 } from '@solar-icons/react-native';
 
 import { ResumeCard } from '@/components/ResumeCard';
@@ -21,17 +20,38 @@ import { ResumeCard } from '@/components/ResumeCard';
 import { InsightCard } from '@/components/InsightCard';
 import { BigNumber } from '@/components/BigNumber';
 import { Header } from '@/components/Header';
+import { formatBRL, useResumeData } from '@/hooks/resume/useResumeData';
 
 export default function Resume() {
-  const router = useRouter();
+  const {
+    isLoading,
+    hasData,
+    totalBalance,
+    monthBalance,
+    percentage,
+    income,
+    expense,
+    topIncome,
+    topExpense,
+    refetch,
+  } = useResumeData();
 
-  const jwt = getItem('jwt');
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch])
+  );
 
-  useEffect(() => {
-    if (!jwt) {
-      router.replace('/');
-    }
-  }, [jwt]);
+  if (isLoading) {
+    return (
+      <SafeAreaView>
+        <StatusBar style="auto" backgroundColor="#ffffff" />
+        <View className="h-full items-center justify-center bg-white">
+          <ActivityIndicator size="large" color="#805AD5" />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView>
@@ -43,61 +63,80 @@ export default function Resume() {
         <ScrollView className="h-full w-full px-5 py-6">
           <BigNumber
             title="Saldo do mês"
-            value="123.456,78"
-            percentage={5}
-            description="a mais que o mês anterior"
-            type="positive"
+            value={formatBRL(monthBalance)}
+            percentage={Math.abs(percentage)}
+            description={
+              percentage >= 0
+                ? 'a mais que o mês anterior'
+                : 'a menos que o mês anterior'
+            }
+            type={percentage >= 0 ? 'positive' : 'negative'}
           />
 
-          <InsightCard text="Sua margem de lucro subiu 5% este mês porque você gastou menos com fornecedores." />
+          {!hasData && (
+            <Text className="mt-4 text-center font-manrope-medium text-base text-gray-500">
+              Você ainda não tem movimentações. Converse com o assistente para
+              registrar suas contas e transações.
+            </Text>
+          )}
 
-          <View className="mt-4 mb-44 w-full flex-row gap-2">
-            <View className="flex-1 gap-2">
-              <ResumeCard
-                type="positive"
-                title="Entradas"
-                value="32.978,45"
-                Icon={ArrowUpOutline}
+          {hasData && (
+            <>
+              <InsightCard
+                text={`Seu saldo total em contas é R$ ${formatBRL(totalBalance)}. Pergunte ao assistente como melhorar seu resultado este mês.`}
               />
-              <ResumeCard
-                type="positive"
-                title="Melhor produto"
-                value="7.342,89"
-                description="Bolo no Pote (x48)"
-                Icon={StarBold}
-              />
-              <ResumeCard
-                type="positive"
-                title="Maior lucro"
-                value="5.678,12"
-                description="Encomendas"
-                Icon={DollarMinimalisticBold}
-              />
-            </View>
 
-            <View className="flex-1 gap-2">
-              <ResumeCard
-                type="negative"
-                title="Entradas"
-                value="32.978,45"
-                Icon={ArrowDownOutline}
-              />
-              <ResumeCard
-                type="negative"
-                title="Melhor produto"
-                value="7.342,89"
-                description="Bolo no Pote (x48)"
-                Icon={CourseDownOutline}
-              />
-              <ResumeCard
-                type="negative"
-                title="Maior lucro"
-                value="5.678,12"
-                description="Encomendas"
-                Icon={CashOutBold}
-              />
-            </View>
-          </View>
+              <View className="mt-4 mb-44 w-full flex-row gap-2">
+                <View className="flex-1 gap-2">
+                  <ResumeCard
+                    type="positive"
+                    title="Entradas"
+                    value={formatBRL(income)}
+                    Icon={ArrowUpOutline}
+                  />
+                  {topIncome && (
+                    <ResumeCard
+                      type="positive"
+                      title="Maior receita"
+                      value={formatBRL(topIncome.total)}
+                      description={`${topIncome.name} (x${topIncome.count})`}
+                      Icon={StarBold}
+                    />
+                  )}
+                  <ResumeCard
+                    type="positive"
+                    title="Saldo em contas"
+                    value={formatBRL(totalBalance)}
+                    Icon={WalletBold}
+                  />
+                </View>
+
+                <View className="flex-1 gap-2">
+                  <ResumeCard
+                    type="negative"
+                    title="Saídas"
+                    value={formatBRL(expense)}
+                    Icon={ArrowDownOutline}
+                  />
+                  {topExpense && (
+                    <ResumeCard
+                      type="negative"
+                      title="Maior despesa"
+                      value={formatBRL(topExpense.total)}
+                      description={`${topExpense.name} (x${topExpense.count})`}
+                      Icon={CashOutBold}
+                    />
+                  )}
+                  <ResumeCard
+                    type={monthBalance >= 0 ? 'positive' : 'negative'}
+                    title="Resultado do mês"
+                    value={formatBRL(monthBalance)}
+                    Icon={DollarMinimalisticBold}
+                  />
+                </View>
+              </View>
+            </>
+          )}
         </ScrollView>
       </View>
     </SafeAreaView>

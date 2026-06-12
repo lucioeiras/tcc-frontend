@@ -5,6 +5,7 @@ import { useMutation } from '@tanstack/react-query';
 
 import { api } from '@/services/api';
 import { useAuth } from '@/contexts/AuthContext';
+import { getApiErrorMessage } from '@/utils/getApiErrorMessage';
 
 type SignUpProps = {
   name: string;
@@ -28,18 +29,22 @@ export const useSignUp = () => {
   return useMutation({
     mutationFn: signUp,
     onSuccess: async (data) => {
-      const { user, token } = data;
+      const { user, token, refreshToken } = data;
 
       if (token) {
         await setItemAsync('jwt', token);
         await setItemAsync('usuario', JSON.stringify(user));
+
+        if (refreshToken) {
+          await setItemAsync('refreshToken', refreshToken);
+        }
       }
 
       setSigned(true);
     },
     onError: (error) => {
       if (isAxiosError(error)) {
-        alert(error.response?.data?.message || 'Erro ao criar conta. Tente novamente.');
+        alert(getApiErrorMessage(error.response?.data, 'Erro ao criar conta. Tente novamente.'));
       } else {
         alert('Erro desconhecido. Tente novamente.');
       }

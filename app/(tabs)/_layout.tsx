@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import * as SplashScreen from 'expo-splash-screen';
 import { Tabs } from 'expo-router';
 
@@ -14,9 +13,7 @@ import {
 
 import CustomTabBar from '@/components/TabBar';
 
-export default function RootLayout() {
-  const queryClient = new QueryClient();
-
+export default function TabsLayout() {
   const [fontsLoaded, fontError] = useFonts({
     'Manrope-Regular': Manrope_400Regular,
     'Manrope-Medium': Manrope_500Medium,
@@ -35,16 +32,14 @@ export default function RootLayout() {
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <Tabs
-        tabBar={(props) => <CustomTabBar {...props} />}
-        screenOptions={{
-          headerShown: false,
-          sceneStyle: { backgroundColor: '#ffffff' },
-        }}>
-        <Tabs.Screen name="resume/index" />
-        <Tabs.Screen name="assistant/index" />
-      </Tabs>
-    </QueryClientProvider>
+    <Tabs
+      tabBar={(props) => <CustomTabBar {...props} />}
+      screenOptions={{
+        headerShown: false,
+        sceneStyle: { backgroundColor: '#ffffff' },
+      }}>
+      <Tabs.Screen name="resume/index" />
+      <Tabs.Screen name="assistant/index" />
+    </Tabs>
   );
 }

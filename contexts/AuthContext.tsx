@@ -8,6 +8,8 @@ import {
 import { getItemAsync, deleteItemAsync } from 'expo-secure-store';
 import { useRouter, useSegments, useNavigationContainerRef } from 'expo-router';
 
+import { api, setOnSessionExpired } from '@/services/api';
+
 type User = {
   id: number | string;
   name: string;
@@ -84,13 +86,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
+    const refreshToken = await getItemAsync('refreshToken');
+
+    // Best-effort: invalida o refresh token no servidor
+    if (refreshToken) {
+      try {
+        await api.post('/auth/logout', { refreshToken });
+      } catch {
+        // mesmo se falhar, limpa a sessão local
+      }
+    }
+
     await deleteItemAsync('jwt');
+    await deleteItemAsync('refreshToken');
     await deleteItemAsync('usuario');
 
     setJwt(null);
     setUser(null);
     setSignedState(false);
   };
+
+  // Quando o refresh falhar no interceptor, derruba a sessão no app
+  useEffect(() => {
+    setOnSessionExpired(() => {
+      setJwt(null);
+      setUser(null);
+      setSignedState(false);
+    });
+
+    return () => setOnSessionExpired(null);
+  }, []);
 
   useProtectedRoute(signed);
 
