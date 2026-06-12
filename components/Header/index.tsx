@@ -6,19 +6,15 @@ import {
 } from '@solar-icons/react-native';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { Button } from '../Button';
-import { deleteItemAsync } from 'expo-secure-store';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'expo-router';
 
 export const Header = () => {
-  const { setSigned } = useAuth();
+  const { signOut } = useAuth();
   const router = useRouter();
 
   const handleSignOut = async () => {
-    await deleteItemAsync('jwt');
-    await deleteItemAsync('usuario');
-
-    setSigned(false);
+    await signOut();
     router.replace('/');
   };
 

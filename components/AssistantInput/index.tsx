@@ -1,28 +1,34 @@
-import { Text, TextInput, TextInputProps, View } from 'react-native';
+import { TextInput, View } from 'react-native';
+import type { StyleProp, TextInputProps, ViewStyle } from 'react-native';
 import { Button } from '../Button';
 import { PlainBold } from '@solar-icons/react-native';
 
 type AssistantInputProps = TextInputProps & {
+  containerStyle?: StyleProp<ViewStyle>;
   handleQuestion: (question: string) => void;
 };
 
 export const AssistantInput = ({
+  containerStyle,
   value,
   handleQuestion,
   ...props
 }: AssistantInputProps) => {
   return (
     <View
-      className={`max-w-full border border-gray-300 bg-white mx-5 mb-36 ${value === '' ? 'flex-row gap-4 items-center py-3 pr-3 pl-6 rounded-full' : 'gap-8 rounded-4xl p-6'}`}
-      style={{
-        // iOS
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.12,
-        shadowRadius: 8,
-        // Android
-        elevation: 12,
-      }}
+      className={`mx-5 max-w-full border border-gray-300 bg-white ${value === '' ? 'flex-row items-center gap-4 rounded-full py-3 pr-3 pl-6' : 'gap-8 rounded-4xl p-6'}`}
+      style={[
+        {
+          // iOS
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 0 },
+          shadowOpacity: 0.12,
+          shadowRadius: 8,
+          // Android
+          elevation: 12,
+        },
+        containerStyle,
+      ]}
     >
       <TextInput
         placeholder="Pergunte algo..."
